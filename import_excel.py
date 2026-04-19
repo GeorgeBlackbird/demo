@@ -9,7 +9,7 @@ from typing import Iterable
 
 from openpyxl import load_workbook
 
-from db import BASE_DIR, get_connection, hash_password, init_db, upsert_user
+from db import BASE_DIR, get_connection, init_db, upsert_user
 
 
 def resolve_import_dir() -> Path:

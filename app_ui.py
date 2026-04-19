@@ -30,7 +30,7 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
-from db import BASE_DIR, execute, fetch_all, fetch_one, get_connection, hash_password, is_sha256_hash, verify_password
+from db import BASE_DIR, execute, fetch_all, fetch_one, get_connection, normalize_password
 from import_excel import resolve_import_dir
 
 
@@ -103,17 +103,9 @@ class LoginWindow(QWidget):
             show_error(self, "Пользователь не найден.")
             return
 
-        stored_password = str(user["password_hash"] or "")
-        if not verify_password(password, stored_password):
+        if normalize_password(password) != str(user["password_hash"] or ""):
             show_error(self, "Неверный пароль.")
             return
-
-        # Migrate legacy plaintext values to hash after first successful login.
-        if not is_sha256_hash(stored_password):
-            execute(
-                "UPDATE users SET password_hash = ? WHERE user_id = ?",
-                (hash_password(password.strip()), int(user["user_id"])),
-            )
 
         self.authenticated_user = SessionUser(
             user_id=int(user["user_id"]),
@@ -829,7 +821,7 @@ class MainWindow(QMainWindow):
                         ?, ?, ?
                     )
                     """,
-                    (full_name, login, hash_password("123456")),
+                    (full_name, login, "123456"),
                 )
                 user_row = conn.execute("SELECT user_id FROM users WHERE login = ?", (login,)).fetchone()
                 user_id = int(user_row["user_id"]) if user_row else None
