@@ -349,7 +349,7 @@ class CatalogPanel(QWidget):
         image_label.setAlignment(Qt.AlignCenter)
         image_label.setMinimumSize(160, 130)
 
-        image_path = self._resolve_image_path(str(product.photo or ""))
+        image_path = self._effective_product_image_path(product)
         if image_path is not None:
             pixmap = QPixmap(str(image_path))
             if not pixmap.isNull():
@@ -410,6 +410,27 @@ class CatalogPanel(QWidget):
         return card
 
     @staticmethod
+    def _project_root() -> Path:
+        return Path(__file__).resolve().parent.parent
+
+    @classmethod
+    def _placeholder_product_image_path(cls) -> Path | None:
+        path = cls._project_root() / "import" / "picture.png"
+        return path if path.is_file() else None
+
+    def _effective_product_image_path(self, product: Product) -> Path | None:
+        primary = self._resolve_image_path(str(product.photo or "").strip())
+        for path in (primary, self._placeholder_product_image_path()):
+            if path is None:
+                continue
+            if not path.is_file():
+                continue
+            pixmap = QPixmap(str(path))
+            if not pixmap.isNull():
+                return path
+        return None
+
+    @staticmethod
     def _resolve_image_path(image_name: str) -> Path | None:
         if not image_name:
             return None
@@ -418,10 +439,13 @@ class CatalogPanel(QWidget):
         if source.is_absolute():
             candidates.append(source)
         base = Path(__file__).resolve().parent
+        project = CatalogPanel._project_root()
         candidates.extend(
             [
                 base / image_name,
                 base / "import" / image_name,
+                project / image_name,
+                project / "import" / image_name,
                 Path.cwd() / image_name,
                 Path.cwd() / "import" / image_name,
             ]
