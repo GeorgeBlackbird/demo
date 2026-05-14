@@ -119,19 +119,25 @@ class CatalogPanel(QWidget):
         layout.addLayout(controls)
 
         self.catalog_cards = QListWidget()
-        self.catalog_cards.setSpacing(10)
+        self.catalog_cards.setSpacing(5)
         self.catalog_cards.setSelectionMode(QListWidget.SingleSelection)
         self.catalog_cards.setVerticalScrollMode(QListWidget.ScrollPerPixel)
         self.catalog_cards.setStyleSheet(
             """
+            QListWidget {
+                background-color: #FFFFFF;
+                border: none;
+                outline: none;
+            }
             QListWidget::item {
                 border: 2px solid #000000;
                 margin: 4px;
                 padding: 2px;
+                background: transparent;
             }
             QListWidget::item:selected {
                 border: 2px solid #00FA9A;
-                background: #F4FFFA;
+                background: transparent;
             }
             """
         )
@@ -303,7 +309,8 @@ class CatalogPanel(QWidget):
         discount: float,
     ) -> QWidget:
         card = QFrame()
-        card.setFrameShape(QFrame.Box)
+        card.setObjectName("productCard")
+        card.setFrameShape(QFrame.NoFrame)
 
         if int(product.quantity or 0) == 0:
             card_bg = "#87CEFA"
@@ -311,13 +318,36 @@ class CatalogPanel(QWidget):
             card_bg = "#2E8B57"
         else:
             card_bg = "#FFFFFF"
-        card.setStyleSheet(f"QFrame {{ background-color: {card_bg}; }}")
+        card.setStyleSheet(
+            f"""
+            QFrame#productCard {{
+                background-color: {card_bg};
+                border: 2px solid #000000;
+            }}
+            QFrame#productCard QWidget {{
+                background-color: transparent;
+            }}
+            QFrame#productCard QLabel {{
+                background-color: transparent;
+            }}
+            QLabel#productPhoto {{
+                background-color: #FFFFFF;
+                border: 1px solid #000000;
+            }}
+            QWidget#productDiscountStrip {{
+                background-color: transparent;
+                border-left: 1px solid #000000;
+            }}
+            """
+        )
 
         layout = QHBoxLayout()
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(0)
         image_label = QLabel("Фото")
+        image_label.setObjectName("productPhoto")
         image_label.setAlignment(Qt.AlignCenter)
         image_label.setMinimumSize(160, 130)
-        image_label.setStyleSheet("border: 1px solid #000000; background: #FFFFFF;")
 
         image_path = self._resolve_image_path(str(product.photo or ""))
         if image_path is not None:
@@ -338,7 +368,7 @@ class CatalogPanel(QWidget):
         info_layout.setContentsMargins(0, 0, 0, 0)
         info_layout.setSpacing(3)
         name_label = QLabel(f"{product.category} | {product.name}")
-        name_label.setStyleSheet("font-weight: bold;")
+        name_label.setStyleSheet("font-weight: bold; background: transparent;")
         name_label.setWordWrap(True)
         info_layout.addWidget(name_label)
         info_layout.addWidget(QLabel(f"Описание товара: {str(product.description or '-') }"))
@@ -347,9 +377,9 @@ class CatalogPanel(QWidget):
 
         price_row = QHBoxLayout()
         old_price = QLabel(f"{price:.2f}")
-        old_price.setStyleSheet("color: #FF0000; text-decoration: line-through;")
+        old_price.setStyleSheet("color: #FF0000; text-decoration: line-through; background: transparent;")
         new_price = QLabel(f"{discounted:.2f}")
-        new_price.setStyleSheet("color: #000000; font-weight: bold;")
+        new_price.setStyleSheet("color: #000000; font-weight: bold; background: transparent;")
         price_row.addWidget(QLabel("Цена:"))
         price_row.addWidget(old_price)
         price_row.addWidget(new_price)
@@ -366,12 +396,12 @@ class CatalogPanel(QWidget):
         discount_layout.addStretch()
         discount_text = QLabel(f"Действующая\nскидка\n{discount:.0f}%")
         discount_text.setAlignment(Qt.AlignCenter)
-        discount_text.setStyleSheet("font-weight: bold;")
+        discount_text.setStyleSheet("font-weight: bold; background: transparent;")
         discount_layout.addWidget(discount_text)
         discount_layout.addStretch()
+        discount_widget.setObjectName("productDiscountStrip")
         discount_widget.setLayout(discount_layout)
         discount_widget.setMinimumWidth(120)
-        discount_widget.setStyleSheet("border-left: 1px solid #000000;")
 
         layout.addWidget(image_label, 2)
         layout.addWidget(info_widget, 5)

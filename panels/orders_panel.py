@@ -135,19 +135,25 @@ class OrdersPanel(QWidget):
 
         layout = QVBoxLayout()
         self.orders_cards = QListWidget()
-        self.orders_cards.setSpacing(10)
+        self.orders_cards.setSpacing(5)
         self.orders_cards.setSelectionMode(QListWidget.SingleSelection)
         self.orders_cards.setVerticalScrollMode(QListWidget.ScrollPerPixel)
         self.orders_cards.setStyleSheet(
             """
+            QListWidget {
+                background-color: #FFFFFF;
+                border: none;
+                outline: none;
+            }
             QListWidget::item {
                 border: 2px solid #000000;
                 margin: 4px;
                 padding: 2px;
+                background: transparent;
             }
             QListWidget::item:selected {
                 border: 2px solid #00FA9A;
-                background: #F4FFFA;
+                background: transparent;
             }
             """
         )
@@ -349,10 +355,31 @@ class OrdersPanel(QWidget):
         items: str,
     ) -> QWidget:
         card = QFrame()
-        card.setFrameShape(QFrame.Box)
-        card.setStyleSheet(f"QFrame {{ background-color: {self._status_color(status)}; }}")
+        card.setObjectName("orderCard")
+        card.setFrameShape(QFrame.NoFrame)
+        card_bg = self._status_color(status)
+        card.setStyleSheet(
+            f"""
+            QFrame#orderCard {{
+                background-color: {card_bg};
+                border: 2px solid #000000;
+            }}
+            QFrame#orderCard QWidget {{
+                background-color: transparent;
+            }}
+            QFrame#orderCard QLabel {{
+                background-color: transparent;
+            }}
+            QWidget#orderStatusStrip {{
+                background-color: transparent;
+                border-left: 1px solid #000000;
+            }}
+            """
+        )
 
         layout = QHBoxLayout()
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(0)
 
         info_widget = QWidget()
         info_layout = QVBoxLayout()
@@ -360,7 +387,7 @@ class OrdersPanel(QWidget):
         info_layout.setSpacing(3)
 
         title = QLabel(f"Заказ №{number} | {status}")
-        title.setStyleSheet("font-weight: bold;")
+        title.setStyleSheet("font-weight: bold; background: transparent;")
         title.setWordWrap(True)
         info_layout.addWidget(title)
         info_layout.addWidget(QLabel(f"Клиент: {customer}"))
@@ -377,12 +404,12 @@ class OrdersPanel(QWidget):
         status_layout.addStretch()
         status_text = QLabel(f"Статус\n{status}")
         status_text.setAlignment(Qt.AlignCenter)
-        status_text.setStyleSheet("font-weight: bold;")
+        status_text.setStyleSheet("font-weight: bold; background: transparent;")
         status_layout.addWidget(status_text)
         status_layout.addStretch()
+        status_widget.setObjectName("orderStatusStrip")
         status_widget.setLayout(status_layout)
         status_widget.setMinimumWidth(150)
-        status_widget.setStyleSheet("border-left: 1px solid #000000;")
 
         layout.addWidget(info_widget, 6)
         layout.addWidget(status_widget, 1)
