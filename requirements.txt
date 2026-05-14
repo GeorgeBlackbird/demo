@@ -1,5 +1,7 @@
 PyQt5
 openpyxl
+pandas
+peewee
 pyinstaller
 Pillow
 
