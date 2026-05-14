@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pyexceldata"
+version = "1.0.0"
+description = "Bundled project payload files for manual copy into target root."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "PyQt5",
+  "openpyxl",
+  "pandas",
+  "peewee",
+  "Pillow",
+]
+
+[tool.setuptools.packages.find]
+include = ["excelindex*"]
+
+[tool.setuptools.package-data]
+excelindex = ["payload/**/*"]

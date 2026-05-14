@@ -2,6 +2,29 @@
 
 Desktop-приложение для автоматизации каталога и заказов с ролями доступа, импортом Excel и SQLite-базой в 3НФ.
 
+## Упаковка как pip payload
+
+Этот репозиторий можно собрать в пакет, который кладет готовое решение в `site-packages`.
+После установки достаточно перейти в директорию payload и скопировать файлы в корень целевого проекта.
+
+```bash
+python -m pip install --upgrade build
+python -m build
+python -m pip install dist/pyexceldata-1.0.0-py3-none-any.whl
+```
+
+Получить путь к payload:
+
+```bash
+python -m excelindex
+```
+
+Опционально можно сразу скопировать в нужную папку:
+
+```bash
+python -m excelindex --copy-to "C:/path/to/project"
+```
+
 ## Быстрый запуск
 
 ```bash
@@ -10,6 +33,7 @@ python main.py
 ```
 
 При первом запуске:
+
 - создается БД `obuv_store.db` по `schema.sql`;
 - автоматически выполняется импорт из папки `import`.
 
@@ -46,4 +70,3 @@ build_exe.bat
   - `user_import.xlsx`
   - `Заказ_import.xlsx`
   - `Пункты выдачи_import.xlsx`
-
