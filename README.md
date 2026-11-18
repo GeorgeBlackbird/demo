@@ -1,49 +1,69 @@
-# ИС «ООО Обувь»
+# Demonstration exam: shop management app
 
-Desktop-приложение для автоматизации каталога и заказов с ролями доступа, импортом Excel и SQLite-базой в 3НФ.
+My solution for the college demonstration exam. I received the maximum score for it. I am keeping the project as a record of that work; no further updates are planned.
 
-## Быстрый запуск
+The assignment was a desktop application for a shoe shop, called «ООО Обувь» in the exam materials. It uses Python, PyQt5, SQLite and Excel imports. The interface and supporting documents are in Russian.
 
-```bash
+## What it includes
+
+- A product catalogue with images, prices, discounts and stock quantities.
+- Login and guest access, with different controls for each role.
+- Search, supplier filtering and stock sorting for managers and administrators.
+- Order management and administrator controls for adding, editing and deleting products.
+- Import of products, users, orders and pickup points from Excel files.
+
+## Run locally
+
+Use Python 3.10 or later. From the repository root, with your Python environment activated:
+
+```sh
+git clone https://github.com/GeorgeBlackbird/demo.git
+cd demo
 python -m pip install -r requirements.txt
 python main.py
 ```
 
-При первом запуске:
-- создается БД `obuv_store.db` по `schema.sql`;
-- автоматически выполняется импорт из папки `import`.
+On startup, the application creates or initialises `obuv_store.db` using `schema.sql`, then runs the Excel importer. The import runs on subsequent launches too, not just when the database is first created.
 
-## Сборка в `.exe` (Windows)
+Keep the `import/` directory and its images in place. The importer expects these spreadsheets:
 
-```bash
+```text
+Tovar.xlsx
+user_import.xlsx
+Заказ_import.xlsx
+Пункты выдачи_import.xlsx
+```
+
+## Roles
+
+| Role | Available interface |
+| --- | --- |
+| Guest (`Гость`) | Browse the catalogue |
+| Client (`Клиент`) | Browse the catalogue after logging in |
+| Manager (`Менеджер`) | Search, filter and sort the catalogue; work with orders |
+| Administrator (`Администратор`) | Manager controls plus product creation, editing and deletion |
+
+## Windows executable
+
+The existing packaging script uses PyInstaller:
+
+```bat
 build_exe.bat
 ```
 
-Готовый файл: `dist/OOO_Obuv_App.exe`
+Run it from the repository root in an environment where the required Python tools are available. The script installs `requirements.txt` before building and writes `dist/OOO_Obuv_App.exe`.
 
-## Роли и доступ
+The current PyInstaller command does not bundle `schema.sql` or the `import/` directory. Keep both beside the executable when distributing it. The application creates its database beside the executable when running as a packaged app.
 
-- **Гость**: просмотр каталога без поиска/фильтрации/сортировки.
-- **Клиент**: просмотр каталога.
-- **Менеджер**: просмотр каталога + поиск/фильтрация/сортировка + работа с заказами.
-- **Администратор**: полный CRUD товаров и заказов.
+## Source and exam materials
 
-После входа в правом верхнем углу отображается `ФИО | Роль`.
+| File | Purpose |
+| --- | --- |
+| [`main.py`](main.py) | Startup, data import and window lifecycle |
+| [`app_ui.py`](app_ui.py) | Login, role controls, catalogue and order windows |
+| [`db.py`](db.py) | SQLite connections, schema initialisation and database helpers |
+| [`schema.sql`](schema.sql) | Tables, relationships and constraints |
+| [`import_excel.py`](import_excel.py) | Import of the supplied Excel data |
+| [Exam brief](<ТЗ ДЭ.md>) | Original task requirements in Russian |
 
-## Важные файлы
-
-- `schema.sql` — структура БД (3НФ, PK/FK, CHECK-ограничения).
-- `import_excel.py` — алгоритм автоматической загрузки из Excel.
-- `db.py` — подключение к БД и базовые операции.
-- `app_ui.py` — интерфейс, роли, каталог, CRUD.
-- `main.py` — точка входа.
-
-## Примечания по данным
-
-- Источник данных: папка `import`.
-- Поддерживаемые файлы импорта:
-  - `Tovar.xlsx`
-  - `user_import.xlsx`
-  - `Заказ_import.xlsx`
-  - `Пункты выдачи_import.xlsx`
-
+This is a completed exam submission, not an actively maintained shop-management product. The repository has no configured typecheck, lint command or automated test suite. The packaged Windows executable has not been reverified as part of this documentation update.
